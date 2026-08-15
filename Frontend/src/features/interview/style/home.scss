@@ -151,6 +151,7 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
         align-items: center;
         gap: 0.5rem;
         margin-bottom: 0.25rem;
+        position: relative;
 
         h2 {
             font-size: 1rem;
@@ -219,6 +220,158 @@ $font-stack:     system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robot
 
     &--right {
         gap: 0.75rem;
+    }
+}
+
+// ── Profile Dropdown ──────────────────────────────────────────────────────────
+.profile-dropdown-container {
+    position: relative;
+    user-select: none;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    cursor: pointer;
+    padding: 0.35rem 0.5rem;
+    margin: -0.35rem -0.5rem;
+    border-radius: 0.5rem;
+    transition: background-color 0.15s, color 0.15s;
+
+    &:hover,
+    &--active {
+        background-color: rgba($accent, 0.08);
+
+        .profile-chevron {
+            color: $accent;
+        }
+    }
+
+    h2 {
+        margin: 0;
+    }
+}
+
+.profile-chevron {
+    display: flex;
+    align-items: center;
+    color: $text-muted;
+    transition: transform 0.2s ease-in-out, color 0.2s;
+
+    &--open {
+        transform: rotate(180deg);
+        color: $accent;
+    }
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background-color: $bg-panel;
+    border: 1px solid $border-color;
+    border-radius: 0.6rem;
+    padding: 0.85rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    animation: dropdownFadeIn 0.15s ease-out;
+
+    &__user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    &__avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, $accent 0%, color.adjust($accent, $lightness: -15%) 100%);
+        color: #ffffff;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        letter-spacing: 0.05em;
+        box-shadow: 0 2px 6px rgba($accent, 0.3);
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    &__name {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: $text-primary;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__email {
+        margin: 0;
+        font-size: 0.75rem;
+        color: $text-muted;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__divider {
+        height: 1px;
+        background-color: $border-color;
+        margin: 0 -0.85rem;
+    }
+
+    &__logout {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        width: 100%;
+        padding: 0.5rem 0.6rem;
+        background: none;
+        border: none;
+        border-radius: 0.4rem;
+        color: #ff4d4d;
+        font-family: $font-stack;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.15s;
+
+        &:hover {
+            background-color: rgba(#ff4d4d, 0.1);
+        }
+
+        &-icon {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

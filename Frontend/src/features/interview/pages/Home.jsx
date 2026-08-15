@@ -1,16 +1,20 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
+import { useAuth } from '../../auth/hooks/useAuth.js'
 import { useNavigate } from 'react-router'
 
 const Home = () => {
 
     const { loading, generateReport, reports, deleteReport } = useInterview()
+    const { user, handleLogout } = useAuth()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
     const [ selectedReportToDelete, setSelectedReportToDelete ] = useState(null)
     const [ deleteError, setDeleteError ] = useState(null)
+    const [ isProfileOpen, setIsProfileOpen ] = useState(false)
     const resumeInputRef = useRef()
+    const profileDropdownRef = useRef(null)
 
     const navigate = useNavigate()
 
@@ -19,6 +23,29 @@ const Home = () => {
         const data = await generateReport({ jobDescription, selfDescription, resumeFile })
         navigate(`/interview/${data._id}`)
     }
+
+    const onLogoutClick = async (e) => {
+        e.stopPropagation()
+        try {
+            setIsProfileOpen(false)
+            await handleLogout()
+            navigate('/login')
+        } catch (err) {
+            console.error("Logout failed:", err)
+        }
+    }
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+                setIsProfileOpen(false)
+            }
+        }
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside)
+        }
+    }, [])
 
     if (loading) {
         return (
@@ -64,11 +91,54 @@ const Home = () => {
 
                     {/* Right Panel - Profile */}
                     <div className='panel panel--right'>
-                        <div className='panel__header'>
-                            <span className='panel__icon'>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-                            </span>
-                            <h2>Your Profile</h2>
+                        <div className='panel__header profile-dropdown-container' ref={profileDropdownRef}>
+                            <div
+                                className={`profile-trigger ${isProfileOpen ? 'profile-trigger--active' : ''}`}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setIsProfileOpen(prev => !prev)
+                                }}
+                                role="button"
+                                tabIndex={0}
+                                aria-haspopup="true"
+                                aria-expanded={isProfileOpen}
+                            >
+                                <span className='panel__icon'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                                </span>
+                                <h2>Your Profile</h2>
+                                <span className={`profile-chevron ${isProfileOpen ? 'profile-chevron--open' : ''}`}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                                </span>
+                            </div>
+
+                            {isProfileOpen && (
+                                <div className="profile-dropdown">
+                                    <div className="profile-dropdown__user">
+                                        <div className="profile-dropdown__avatar">
+                                            {(user?.username || user?.email || 'U').slice(0, 2).toUpperCase()}
+                                        </div>
+                                        <div className="profile-dropdown__info">
+                                            <p className="profile-dropdown__name">{user?.username || 'User'}</p>
+                                            <p className="profile-dropdown__email">{user?.email || ''}</p>
+                                        </div>
+                                    </div>
+                                    <div className="profile-dropdown__divider" />
+                                    <button
+                                        className="profile-dropdown__logout"
+                                        onClick={onLogoutClick}
+                                    >
+                                        <span className="profile-dropdown__logout-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                                <polyline points="16 17 21 12 16 7"></polyline>
+                                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                                            </svg>
+                                        </span>
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {/* Upload Resume */}
