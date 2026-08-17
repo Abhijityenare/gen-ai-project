@@ -2,6 +2,7 @@ const { GoogleGenAI } = require("@google/genai")
 const { z } = require("zod")
 const { zodToJsonSchema } = require("zod-to-json-schema")
 const puppeteer = require('puppeteer')
+const fs = require('fs')
 const ai = new GoogleGenAI({
     apiKey: process.env.GOOGLE_GENAI_API_KEY
 })
@@ -61,6 +62,8 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 
 
 async function generatePdfFromHtml(htmlContent) {
+    console.log("Chrome path:", puppeteer.executablePath());
+console.log("Chrome exists:", fs.existsSync(puppeteer.executablePath()));
     console.log("Puppeteer executable:", puppeteer.executablePath());
 
 const browser = await puppeteer.launch({
