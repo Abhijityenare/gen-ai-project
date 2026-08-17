@@ -4,10 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon server.js",
-    "start": "node server.js",
-    "postinstall": "npx puppeteer browsers install chrome"
-  },
+  "dev": "npx nodemon server.js",
+  "start": "node server.js"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
